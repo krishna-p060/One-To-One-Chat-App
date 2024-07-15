@@ -60,9 +60,7 @@ const Login = () => {
     } catch (err) {
       console.log(err);
       toast.error(err.message);
-    } finally {
-      setLoading(false);
-    }
+    } 
     }
 
     return (
