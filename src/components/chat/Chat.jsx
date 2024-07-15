@@ -1,10 +1,18 @@
 import "./chat.css";
 import EmojiPicker from "emoji-picker-react";
 import { useEffect, useState } from "react";
-import { onSnapshot, doc } from "firebase/firestore";
+import upload from "../../lib/upload";
 import { db } from "../../lib/firebase";
 import { useChatStore } from "../../lib/chatStore";
 import { useUserStore } from "../../lib/userStore";
+import {
+    arrayUnion,
+    doc,
+    getDoc,
+    onSnapshot,
+    updateDoc,
+  } from "firebase/firestore";
+  import { format } from "timeago.js";
 
 const chat = () => {
     const [open, setOpen] = useState(false);
@@ -103,10 +111,10 @@ const chat = () => {
         <div className="chat">
             <div className="top">
                 <div className="user">
-                    <img src="./avatar.png" alt="" />
+                    <img src={user?.avatar || "./avatar.png"} alt="" />
                     <div className="texts">
-                        <span>Elon Musk</span>
-                        <p>Lorem ipsum dolor sit</p>
+                        <span>{user?.username}</span>
+                        <p>Hey There!!</p>
                     </div>
                 </div>
 
@@ -118,25 +126,37 @@ const chat = () => {
             </div>
 
             <div className="center">
-                { chat?.messages?.map((message) => (
-                <div className="message own" key={message?.createdAt}>
-                    {/* <img src="./avatar.png" alt="" /> */}
-                    <div className="texts">
-                        {message.img && <img src={message.img} alt="" />}
-                        <p>
-                            {message.text}
-                        </p>
-                        <span>1 min ago</span>
-                    </div>
-                </div>
-                ))
-                }   
+            {chat?.messages?.map((message) => (
+          <div
+            className={
+              message.senderId === currentUser?.id ? "message own" : "message"
+            }
+            key={message?.createAt}
+          >
+            <div className="texts">
+              {message.img && <img src={message.img} alt="" />}
+              <p>{message.text}</p>
+              <span>{format(message.createdAt.toDate())}</span>
+            </div>
+          </div>
+        ))}
+        {img.url && (
+          <div className="message own">
+            <div className="texts">
+              <img src={img.url} alt="" />
+            </div>
+          </div>
+        )}
 
             </div>
 
             <div className="bottom">
                 <div className="icons">
+                <label htmlFor="file">
                     <img src="./img.png" alt="" />
+                </label>
+          <input type="file" id="file" style={{ display: "none" }}
+            onChange={handleImg} />
                     <img src="./camera.png" alt="" />
                     <img src="./mic.png" alt="" />
                 </div>
